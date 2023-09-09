@@ -4,10 +4,7 @@ import main.GamePanel;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 
 public class TileManager {
     GamePanel gamePanel;
@@ -17,9 +14,17 @@ public class TileManager {
     public TileManager(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
         tile = new Tile[10];
-        mapTileNum = new int[gamePanel.maxWorldCol][gamePanel.maxWorldRow];
+        mapTileNum = createMap();
+//
+//        Сохранение созданного мира в файл
+//
+//        try {
+//            createMapToFile(mapTileNum);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
         getTileImage();
-        loadMap("/maps/map_01.txt");
+        loadMap("/maps/map_1.txt");
     }
 
     public void getTileImage() {
@@ -36,6 +41,37 @@ public class TileManager {
 
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static int[][] createMap() {
+        int[][] map = new int[50][50];
+
+        for (int i = 0; i < map.length; i++) {
+            for (int j = 0; j < map.length; j++) {
+                if (i == map[i].length - 1 || i == 0 || j == 0 || j == map[j].length - 1) {
+                    map[i][j] = 1;
+                } else {
+                    map[i][j] = (Math.random()<0.67)?0:2;
+                }
+            }
+        }
+        return map;
+    }
+
+    public static void createMapToFile(int[][] map) throws IOException {
+        int c = 1;
+        try (FileWriter fileWriter = new FileWriter("map_" + c + ".txt", true)) {
+            for (int[] ints : map) {
+                for (int j = 0; j < map.length; j++) {
+                    if (j != map.length - 1) {
+                        fileWriter.append(String.valueOf(ints[j])).append(" ");
+                    } else {
+                        fileWriter.append(String.valueOf(ints[j])).append("\n");
+                    }
+                }
+                fileWriter.flush();
+            }
         }
     }
 
